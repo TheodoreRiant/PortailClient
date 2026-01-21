@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
-import { getProjectById, getProjectDeliverables, getPageContent } from "@/lib/notion/queries";
+import { getProjectById, getProjectDeliverables, getPageContent } from "@/lib/notion/cached-queries";
 import { ProjectHeader, ProjectTimeline } from "@/components/projets";
 import { DeliverableCard } from "@/components/livrables/deliverable-card";
 import { EmptyState } from "@/components/shared/empty-state";

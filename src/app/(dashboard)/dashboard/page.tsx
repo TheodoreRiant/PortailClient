@@ -5,7 +5,7 @@ import {
   getDashboardStats,
   getRecentActivity,
   getUpcomingDeadlines,
-} from "@/lib/notion/queries";
+} from "@/lib/notion/cached-queries";
 import {
   StatCard,
   RecentActivity,

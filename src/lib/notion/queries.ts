@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { notion, DATABASES, extractNotionProperty, createNotionProperty } from "./client";
 import type {
   Client,
@@ -8,6 +9,9 @@ import type {
   Commentaire,
   NotionFile,
 } from "@/types";
+
+// Cache configuration
+const CACHE_REVALIDATE = 60; // 60 seconds cache
 
 // ==========================================
 // Transformateurs Notion → Types App

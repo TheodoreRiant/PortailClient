@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { auth } from "@/lib/auth";
-import { getClientById } from "@/lib/notion/queries";
+import { getClientById } from "@/lib/notion/cached-queries";
 import { ProfileForm, PasswordForm } from "@/components/profil";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

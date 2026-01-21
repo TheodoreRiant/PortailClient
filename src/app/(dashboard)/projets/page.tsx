@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getClientProjects } from "@/lib/notion/queries";
+import { getClientProjects } from "@/lib/notion/cached-queries";
 import { ProjectCard } from "@/components/projets";
 import { EmptyState } from "@/components/shared/empty-state";
 

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getClientDeliverables } from "@/lib/notion/queries";
+import { getClientDeliverables } from "@/lib/notion/cached-queries";
 import { DeliverableCard } from "@/components/livrables";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

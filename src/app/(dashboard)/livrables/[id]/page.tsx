@@ -4,7 +4,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { auth } from "@/lib/auth";
-import { getDeliverableById, getProjectById, getPageContent } from "@/lib/notion/queries";
+import { getDeliverableById, getProjectById, getPageContent } from "@/lib/notion/cached-queries";
 import { ValidationForm, FileList } from "@/components/livrables";
 import { NotionContent } from "@/components/shared/notion-content";
 import { Badge } from "@/components/ui/badge";

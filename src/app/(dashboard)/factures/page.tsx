@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getClientInvoices } from "@/lib/notion/queries";
+import { getClientInvoices } from "@/lib/notion/cached-queries";
 import { InvoiceCard, InvoiceSummary } from "@/components/factures";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { auth } from "@/lib/auth";
-import { getInvoiceById, getProjectById } from "@/lib/notion/queries";
+import { getInvoiceById, getProjectById } from "@/lib/notion/cached-queries";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
