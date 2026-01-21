@@ -1,12 +1,36 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import {
+  FolderKanban,
+  Package,
+  FileText,
+  CreditCard,
+  Users,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  LucideIcon,
+} from "lucide-react";
+
+// Map of icon names to components
+const iconMap: Record<string, LucideIcon> = {
+  FolderKanban,
+  Package,
+  FileText,
+  CreditCard,
+  Users,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+};
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
+  icon: string;
   description?: string;
   trend?: {
     value: number;
@@ -42,13 +66,14 @@ const variantStyles = {
 export function StatCard({
   title,
   value,
-  icon: Icon,
+  icon,
   description,
   trend,
   variant = "default",
   className,
 }: StatCardProps) {
   const styles = variantStyles[variant];
+  const Icon = iconMap[icon] || FolderKanban;
 
   return (
     <div

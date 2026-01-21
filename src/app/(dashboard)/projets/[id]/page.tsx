@@ -5,7 +5,6 @@ import { getProjectById, getProjectDeliverables } from "@/lib/notion/queries";
 import { ProjectHeader, ProjectTimeline } from "@/components/projets";
 import { DeliverableCard } from "@/components/livrables/deliverable-card";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Package } from "lucide-react";
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -66,7 +65,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             {deliverables.length === 0 ? (
               <EmptyState
-                icon={Package}
+                icon="Package"
                 title="Aucun livrable"
                 description="Les livrables de ce projet apparaîtront ici dès qu'ils seront disponibles."
               />

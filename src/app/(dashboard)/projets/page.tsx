@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { getClientProjects } from "@/lib/notion/queries";
 import { ProjectCard } from "@/components/projets";
 import { EmptyState } from "@/components/shared/empty-state";
-import { FolderKanban } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Projets",
@@ -32,7 +31,7 @@ export default async function ProjectsPage() {
       {/* Projects grid */}
       {projects.length === 0 ? (
         <EmptyState
-          icon={FolderKanban}
+          icon="FolderKanban"
           title="Aucun projet"
           description="Vous n'avez pas encore de projet en cours. Contactez-nous pour démarrer un nouveau projet."
         />

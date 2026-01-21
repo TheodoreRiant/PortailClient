@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { getClientInvoices } from "@/lib/notion/queries";
 import { InvoiceCard, InvoiceSummary } from "@/components/factures";
 import { EmptyState } from "@/components/shared/empty-state";
-import { FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -40,7 +39,7 @@ export default async function InvoicesPage() {
 
       {invoices.length === 0 ? (
         <EmptyState
-          icon={FileText}
+          icon="FileText"
           title="Aucune facture"
           description="Vous n'avez pas encore de facture. Elles apparaîtront ici dès qu'elles seront disponibles."
         />
@@ -93,7 +92,7 @@ export default async function InvoicesPage() {
             <TabsContent value="pending" className="space-y-4">
               {pendingInvoices.length === 0 ? (
                 <EmptyState
-                  icon={FileText}
+                  icon="FileText"
                   title="Aucune facture en attente"
                   description="Toutes vos factures ont été réglées."
                 />
@@ -109,7 +108,7 @@ export default async function InvoicesPage() {
             <TabsContent value="overdue" className="space-y-4">
               {overdueInvoices.length === 0 ? (
                 <EmptyState
-                  icon={FileText}
+                  icon="FileText"
                   title="Aucune facture en retard"
                   description="Bravo ! Vous n'avez aucune facture en retard de paiement."
                 />
@@ -125,7 +124,7 @@ export default async function InvoicesPage() {
             <TabsContent value="paid" className="space-y-4">
               {paidInvoices.length === 0 ? (
                 <EmptyState
-                  icon={FileText}
+                  icon="FileText"
                   title="Aucune facture payée"
                   description="Vos factures payées apparaîtront ici."
                 />

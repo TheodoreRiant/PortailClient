@@ -17,7 +17,7 @@ function transformClient(page: any): Client {
   const props = page.properties;
   return {
     id: page.id,
-    nom: extractNotionProperty(props.Nom || props.nom || props.Name, "title"),
+    nom: extractNotionProperty(props.Client || props.Nom || props.nom || props.Name, "title"),
     entreprise: extractNotionProperty(props.Entreprise || props.entreprise, "rich_text"),
     email: extractNotionProperty(props.Email || props.email, "email"),
     emailSecondaire: extractNotionProperty(props.EmailSecondaire || props.emailSecondaire, "email"),
@@ -38,10 +38,10 @@ function transformProjet(page: any): Projet {
   return {
     id: page.id,
     nom: extractNotionProperty(props.Projet || props.Nom || props.nom || props.Name, "title"),
-    clientId: extractNotionProperty(props.Client || props.client, "relation")[0] || "",
+    clientId: extractNotionProperty(props.Client || props.client, "relation")?.[0] || "",
     statut: extractNotionProperty(props.Statut || props.statut, "status") ||
             extractNotionProperty(props.Statut || props.statut, "select"),
-    dateDebut: extractNotionProperty(props.DateDebut || props.dateDebut, "date"),
+    dateDebut: extractNotionProperty(props.Date || props.DateDebut || props.dateDebut, "date"),
     dateFinEstimee: extractNotionProperty(props.DateFinEstimee || props.dateFinEstimee, "date"),
     dateFin: extractNotionProperty(props.DateFin || props.dateFin, "date"),
     montantTotal: extractNotionProperty(props.MontantTotal || props.montantTotal, "number") ||
@@ -62,14 +62,14 @@ function transformLivrable(page: any): Livrable {
     id: page.id,
     nom: extractNotionProperty(props.Nom || props.nom || props.Name, "title"),
     description: extractNotionProperty(props.Description || props.description, "rich_text"),
-    projetId: extractNotionProperty(props.Projet || props.projet, "relation")[0] || "",
+    projetId: extractNotionProperty(props.Projet || props.projet, "relation")?.[0] || "",
     projetNom: "", // Will be populated separately if needed
-    clientId: extractNotionProperty(props.Client || props.client, "relation")[0] || "",
+    clientId: extractNotionProperty(props.Client || props.client, "relation")?.[0] || "",
     statut: extractNotionProperty(props.Statut || props.statut, "select") ||
             extractNotionProperty(props.Statut || props.statut, "status"),
     type: extractNotionProperty(props.Type || props.type, "select"),
     version: extractNotionProperty(props.Version || props.version, "rich_text") || "1.0",
-    fichierPrecedentId: extractNotionProperty(props.FichierPrecedent || props.fichierPrecedent, "relation")[0],
+    fichierPrecedentId: extractNotionProperty(props.FichierPrecedent || props.fichierPrecedent, "relation")?.[0],
     fichiers: extractNotionProperty(props.Fichiers || props.fichiers, "files") as NotionFile[],
     lienExterne: extractNotionProperty(props.LienExterne || props.lienExterne, "url"),
     dateCreation: page.created_time,
@@ -83,13 +83,14 @@ function transformLivrable(page: any): Livrable {
 
 function transformFacture(page: any): Facture {
   const props = page.properties;
-  const montantHT = extractNotionProperty(props.MontantHT || props.montantHT, "number") || 0;
+  const montantHT = extractNotionProperty(props.MontantHT || props.montantHT || props.Montant, "number") || 0;
   const tauxTVA = extractNotionProperty(props.TauxTVA || props.tauxTVA, "number") || 20;
   return {
     id: page.id,
-    numero: extractNotionProperty(props.Numero || props.numero || props.Nom || props.Name, "title"),
-    clientId: extractNotionProperty(props.Client || props.client, "relation")[0] || "",
-    projetId: extractNotionProperty(props.Projet || props.projet, "relation")[0],
+    numero: extractNotionProperty(props.Facture || props.Numero || props.numero || props.Nom || props.Name, "title") ||
+            extractNotionProperty(props["Numéro"], "rich_text"),
+    clientId: extractNotionProperty(props.Client || props.client, "relation")?.[0] || "",
+    projetId: extractNotionProperty(props["📁 Projets"] || props.Projet || props.projet, "relation")[0],
     projetNom: "", // Will be populated separately if needed
     montantHT,
     tauxTVA,
@@ -97,12 +98,12 @@ function transformFacture(page: any): Facture {
                 (montantHT * tauxTVA / 100),
     montantTTC: extractNotionProperty(props.MontantTTC || props.montantTTC, "formula") ||
                 (montantHT * (1 + tauxTVA / 100)),
-    dateEmission: extractNotionProperty(props.DateEmission || props.dateEmission, "date"),
-    dateEcheance: extractNotionProperty(props.DateEcheance || props.dateEcheance, "date"),
+    dateEmission: extractNotionProperty(props["Date d'émission"] || props.DateEmission || props.dateEmission, "date"),
+    dateEcheance: extractNotionProperty(props["Date d'échéance"] || props.DateEcheance || props.dateEcheance, "date"),
     datePaiement: extractNotionProperty(props.DatePaiement || props.datePaiement, "date"),
     statut: extractNotionProperty(props.Statut || props.statut, "select") ||
             extractNotionProperty(props.Statut || props.statut, "status"),
-    fichierPDF: extractNotionProperty(props.FichierPDF || props.fichierPDF, "files")[0]?.url,
+    fichierPDF: extractNotionProperty(props.PDF || props.FichierPDF || props.fichierPDF, "files")[0]?.url,
     visiblePortail: extractNotionProperty(props.VisiblePortail || props.visiblePortail, "checkbox"),
   };
 }
@@ -113,8 +114,8 @@ function transformValidation(page: any): Validation {
     id: page.id,
     titre: extractNotionProperty(props.Titre || props.titre || props.Nom || props.Name, "title"),
     livrableId: extractNotionProperty(props.Livrable || props.livrable, "relation")[0] || "",
-    projetId: extractNotionProperty(props.Projet || props.projet, "relation")[0] || "",
-    clientId: extractNotionProperty(props.Client || props.client, "relation")[0] || "",
+    projetId: extractNotionProperty(props.Projet || props.projet, "relation")?.[0] || "",
+    clientId: extractNotionProperty(props.Client || props.client, "relation")?.[0] || "",
     statut: extractNotionProperty(props.Statut || props.statut, "select"),
     dateCreation: page.created_time,
     dateValidation: extractNotionProperty(props.DateValidation || props.dateValidation, "date"),
@@ -286,7 +287,7 @@ export async function getClientProjects(clientId: string): Promise<Projet[]> {
       },
       sorts: [
         {
-          property: "DateDebut",
+          property: "Date",
           direction: "descending",
         },
       ],
@@ -518,7 +519,7 @@ export async function getClientInvoices(clientId: string): Promise<Facture[]> {
       },
       sorts: [
         {
-          property: "DateEmission",
+          property: "Date d'émission",
           direction: "descending",
         },
       ],
@@ -860,7 +861,7 @@ export async function createNotionClient({
     const response = await notion.pages.create({
       parent: { database_id: DATABASES.CLIENTS },
       properties: {
-        Nom: createNotionProperty(nom, "title"),
+        Client: createNotionProperty(nom, "title"),
         Email: createNotionProperty(email, "email"),
         Entreprise: createNotionProperty(entreprise, "rich_text"),
         PortailActif: createNotionProperty(portailActif, "checkbox"),
@@ -872,5 +873,177 @@ export async function createNotionClient({
   } catch (error) {
     console.error("Error creating client:", error);
     throw error;
+  }
+}
+
+// ==========================================
+// Notion Page Content (Blocks)
+// ==========================================
+
+export interface NotionBlock {
+  id: string;
+  type: string;
+  content: string;
+  children?: NotionBlock[];
+  url?: string;
+  caption?: string;
+}
+
+function extractRichText(richText: any[]): string {
+  if (!richText || !Array.isArray(richText)) return "";
+  return richText.map((text: any) => text.plain_text || "").join("");
+}
+
+function transformBlock(block: any): NotionBlock | null {
+  const type = block.type;
+
+  switch (type) {
+    case "paragraph":
+      return {
+        id: block.id,
+        type: "paragraph",
+        content: extractRichText(block.paragraph?.rich_text),
+      };
+    case "heading_1":
+      return {
+        id: block.id,
+        type: "heading_1",
+        content: extractRichText(block.heading_1?.rich_text),
+      };
+    case "heading_2":
+      return {
+        id: block.id,
+        type: "heading_2",
+        content: extractRichText(block.heading_2?.rich_text),
+      };
+    case "heading_3":
+      return {
+        id: block.id,
+        type: "heading_3",
+        content: extractRichText(block.heading_3?.rich_text),
+      };
+    case "bulleted_list_item":
+      return {
+        id: block.id,
+        type: "bulleted_list_item",
+        content: extractRichText(block.bulleted_list_item?.rich_text),
+      };
+    case "numbered_list_item":
+      return {
+        id: block.id,
+        type: "numbered_list_item",
+        content: extractRichText(block.numbered_list_item?.rich_text),
+      };
+    case "to_do":
+      return {
+        id: block.id,
+        type: block.to_do?.checked ? "to_do_checked" : "to_do",
+        content: extractRichText(block.to_do?.rich_text),
+      };
+    case "toggle":
+      return {
+        id: block.id,
+        type: "toggle",
+        content: extractRichText(block.toggle?.rich_text),
+      };
+    case "code":
+      return {
+        id: block.id,
+        type: "code",
+        content: extractRichText(block.code?.rich_text),
+        caption: block.code?.language || "",
+      };
+    case "quote":
+      return {
+        id: block.id,
+        type: "quote",
+        content: extractRichText(block.quote?.rich_text),
+      };
+    case "callout":
+      return {
+        id: block.id,
+        type: "callout",
+        content: extractRichText(block.callout?.rich_text),
+      };
+    case "divider":
+      return {
+        id: block.id,
+        type: "divider",
+        content: "",
+      };
+    case "image":
+      const imageUrl = block.image?.file?.url || block.image?.external?.url || "";
+      return {
+        id: block.id,
+        type: "image",
+        content: "",
+        url: imageUrl,
+        caption: extractRichText(block.image?.caption),
+      };
+    case "video":
+      const videoUrl = block.video?.file?.url || block.video?.external?.url || "";
+      return {
+        id: block.id,
+        type: "video",
+        content: "",
+        url: videoUrl,
+        caption: extractRichText(block.video?.caption),
+      };
+    case "file":
+      const fileUrl = block.file?.file?.url || block.file?.external?.url || "";
+      return {
+        id: block.id,
+        type: "file",
+        content: block.file?.name || "Fichier",
+        url: fileUrl,
+        caption: extractRichText(block.file?.caption),
+      };
+    case "bookmark":
+      return {
+        id: block.id,
+        type: "bookmark",
+        content: "",
+        url: block.bookmark?.url || "",
+        caption: extractRichText(block.bookmark?.caption),
+      };
+    case "embed":
+      return {
+        id: block.id,
+        type: "embed",
+        content: "",
+        url: block.embed?.url || "",
+        caption: extractRichText(block.embed?.caption),
+      };
+    default:
+      return null;
+  }
+}
+
+export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
+  try {
+    const blocks: NotionBlock[] = [];
+    let cursor: string | undefined;
+
+    do {
+      const response = await notion.blocks.children.list({
+        block_id: pageId,
+        start_cursor: cursor,
+        page_size: 100,
+      });
+
+      for (const block of response.results) {
+        const transformed = transformBlock(block);
+        if (transformed) {
+          blocks.push(transformed);
+        }
+      }
+
+      cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
+    } while (cursor);
+
+    return blocks;
+  } catch (error) {
+    console.error("Error fetching page content:", error);
+    return [];
   }
 }

@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { getClientDeliverables } from "@/lib/notion/queries";
 import { DeliverableCard } from "@/components/livrables";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Package } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -39,7 +38,7 @@ export default async function DeliverablesPage() {
 
       {deliverables.length === 0 ? (
         <EmptyState
-          icon={Package}
+          icon="Package"
           title="Aucun livrable"
           description="Vous n'avez pas encore de livrable. Ils apparaîtront ici dès qu'ils seront disponibles."
         />
@@ -85,7 +84,7 @@ export default async function DeliverablesPage() {
           <TabsContent value="pending" className="space-y-4">
             {pendingValidation.length === 0 ? (
               <EmptyState
-                icon={Package}
+                icon="Package"
                 title="Aucun livrable à valider"
                 description="Tous vos livrables ont été validés."
               />
@@ -99,7 +98,7 @@ export default async function DeliverablesPage() {
           <TabsContent value="validated" className="space-y-4">
             {validated.length === 0 ? (
               <EmptyState
-                icon={Package}
+                icon="Package"
                 title="Aucun livrable validé"
                 description="Vos livrables validés apparaîtront ici."
               />
@@ -113,7 +112,7 @@ export default async function DeliverablesPage() {
           <TabsContent value="rejected" className="space-y-4">
             {rejected.length === 0 ? (
               <EmptyState
-                icon={Package}
+                icon="Package"
                 title="Aucun livrable refusé"
                 description="Aucun livrable n'a été refusé."
               />

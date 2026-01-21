@@ -166,7 +166,7 @@ function LoginForm() {
             </div>
             <Link
               href="/reset-password"
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+              className="text-sm text-primary hover:text-primary/80 font-medium"
             >
               Mot de passe oublié ?
             </Link>
@@ -174,7 +174,8 @@ function LoginForm() {
 
           <Button
             type="submit"
-            className="w-full bg-primary-600 hover:bg-primary-700"
+            className="w-full"
+            size="lg"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -194,7 +195,7 @@ function LoginForm() {
           Besoin d&apos;aide ?{" "}
           <a
             href="mailto:contact@example.com"
-            className="text-primary-600 hover:text-primary-700 font-medium"
+            className="text-primary hover:text-primary/80 font-medium"
           >
             Contactez-nous
           </a>

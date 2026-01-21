@@ -12,7 +12,6 @@ import {
   UpcomingDeadlines,
   QuickActions,
 } from "@/components/dashboard";
-import { FolderKanban, Package, FileText, CreditCard } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -51,13 +50,13 @@ export default async function DashboardPage() {
         <StatCard
           title="Projets actifs"
           value={stats.projetsActifs}
-          icon={FolderKanban}
+          icon="FolderKanban"
           variant="primary"
         />
         <StatCard
           title="À valider"
           value={stats.livrablesAValider}
-          icon={Package}
+          icon="Package"
           variant={stats.livrablesAValider > 0 ? "warning" : "default"}
           description={
             stats.livrablesAValider > 0
@@ -68,7 +67,7 @@ export default async function DashboardPage() {
         <StatCard
           title="Factures impayées"
           value={stats.facturesImpayees}
-          icon={FileText}
+          icon="FileText"
           variant={stats.facturesImpayees > 0 ? "danger" : "success"}
         />
         <StatCard
@@ -77,7 +76,7 @@ export default async function DashboardPage() {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })} €`}
-          icon={CreditCard}
+          icon="CreditCard"
           variant={stats.montantDu > 0 ? "danger" : "success"}
         />
       </div>

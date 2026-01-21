@@ -4,8 +4,9 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { auth } from "@/lib/auth";
-import { getDeliverableById, getProjectById } from "@/lib/notion/queries";
+import { getDeliverableById, getProjectById, getPageContent } from "@/lib/notion/queries";
 import { ValidationForm, FileList } from "@/components/livrables";
+import { NotionContent } from "@/components/shared/notion-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +64,9 @@ export default async function DeliverablePage({ params }: DeliverablePageProps) 
   const project = deliverable.projetId
     ? await getProjectById(deliverable.projetId, session.user.id)
     : null;
+
+  // Fetch Notion page content (blocks) for this deliverable
+  const pageContent = await getPageContent(id);
 
   const statusColor =
     statutColors.livrable[deliverable.statut as keyof typeof statutColors.livrable] ||
@@ -180,6 +184,21 @@ export default async function DeliverablePage({ params }: DeliverablePageProps) 
               </CardHeader>
               <CardContent>
                 <FileList files={deliverable.fichiers} />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Notion page content (markdown-like) */}
+          {pageContent && pageContent.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Documentation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <NotionContent blocks={pageContent} />
               </CardContent>
             </Card>
           )}

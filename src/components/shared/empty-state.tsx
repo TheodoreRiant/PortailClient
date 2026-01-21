@@ -1,11 +1,37 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon, FolderOpen } from "lucide-react";
+import {
+  FolderOpen,
+  FolderKanban,
+  Package,
+  FileText,
+  CreditCard,
+  Users,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Inbox,
+  LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Map of icon names to components
+const iconMap: Record<string, LucideIcon> = {
+  FolderOpen,
+  FolderKanban,
+  Package,
+  FileText,
+  CreditCard,
+  Users,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Inbox,
+};
+
 interface EmptyStateProps {
-  icon?: LucideIcon;
+  icon?: string;
   title: string;
   description?: string;
   action?: {
@@ -16,12 +42,14 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon: Icon = FolderOpen,
+  icon = "FolderOpen",
   title,
   description,
   action,
   className,
 }: EmptyStateProps) {
+  const Icon = iconMap[icon] || FolderOpen;
+
   return (
     <div
       className={cn(
