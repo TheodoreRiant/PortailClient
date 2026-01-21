@@ -262,6 +262,55 @@ function NotionBlockRenderer({ block, allBlocks }: { block: NotionBlock; allBloc
         </nav>
       );
 
+    case "table":
+      // Table block - children are table_row blocks
+      if (!block.children || block.children.length === 0) return null;
+      const hasColumnHeader = block.hasColumnHeader;
+      const hasRowHeader = block.hasRowHeader;
+      return (
+        <div className="my-4 overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 rounded-lg">
+            <tbody>
+              {block.children.map((row, rowIndex) => {
+                if (row.type !== "table_row" || !row.cells) return null;
+                const isHeaderRow = hasColumnHeader && rowIndex === 0;
+                const CellTag = isHeaderRow ? "th" : "td";
+                return (
+                  <tr
+                    key={row.id}
+                    className={cn(
+                      isHeaderRow ? "bg-gray-50" : rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                    )}
+                  >
+                    {row.cells.map((cell, cellIndex) => {
+                      const isHeaderCell = isHeaderRow || (hasRowHeader && cellIndex === 0);
+                      const ActualCellTag = isHeaderCell ? "th" : CellTag;
+                      return (
+                        <ActualCellTag
+                          key={cellIndex}
+                          className={cn(
+                            "border border-gray-200 px-4 py-2 text-sm",
+                            isHeaderCell
+                              ? "font-semibold text-gray-900 bg-gray-50"
+                              : "text-gray-700"
+                          )}
+                        >
+                          <RichTextRenderer segments={cell} />
+                        </ActualCellTag>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+
+    case "table_row":
+      // Table rows are handled by the table block
+      return null;
+
     case "divider":
       return <hr className="my-6 border-gray-200" />;
 

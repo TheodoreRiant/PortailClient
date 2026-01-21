@@ -901,6 +901,10 @@ export interface NotionBlock {
   children?: NotionBlock[];
   url?: string;
   caption?: string;
+  // Table specific
+  hasColumnHeader?: boolean;
+  hasRowHeader?: boolean;
+  cells?: RichTextSegment[][];  // For table_row: array of cells, each cell is rich text segments
 }
 
 function extractRichText(richText: any[]): string {
@@ -1058,6 +1062,25 @@ function transformBlock(block: any): NotionBlock | null {
         content: "",
         url: block.embed?.url || "",
         caption: extractRichText(block.embed?.caption),
+      };
+    case "table":
+      return {
+        id: block.id,
+        type: "table",
+        content: "",
+        hasColumnHeader: block.table?.has_column_header || false,
+        hasRowHeader: block.table?.has_row_header || false,
+      };
+    case "table_row":
+      // Each cell in a table_row is an array of rich_text
+      const cells = (block.table_row?.cells || []).map((cell: any[]) =>
+        extractRichTextWithLinks(cell)
+      );
+      return {
+        id: block.id,
+        type: "table_row",
+        content: "",
+        cells,
       };
     default:
       return null;
