@@ -108,6 +108,11 @@ export default async function DeliverablePage({ params }: DeliverablePageProps) 
                   <File className="w-4 h-4" />
                   {deliverable.type}
                 </span>
+                {deliverable.lot && (
+                  <Badge variant="outline" className="text-xs">
+                    {deliverable.lot}
+                  </Badge>
+                )}
                 {deliverable.version && (
                   <span className="flex items-center gap-1.5">
                     Version {deliverable.version}

@@ -61,6 +61,7 @@ export interface Livrable {
   clientId: string;
   statut: LivrableStatut;
   type: LivrableType;
+  lot?: string;
   version: string;
   fichierPrecedentId?: string;
   fichiers: NotionFile[];

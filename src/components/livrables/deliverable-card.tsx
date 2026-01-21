@@ -62,7 +62,10 @@ export function DeliverableCard({
           <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary-600 transition-colors">
             {deliverable.nom}
           </p>
-          <p className="text-xs text-gray-500">{deliverable.type}</p>
+          <p className="text-xs text-gray-500">
+            {deliverable.type}
+            {deliverable.lot && ` • ${deliverable.lot}`}
+          </p>
         </div>
         <Badge className={cn("text-xs", statusColor)}>{deliverable.statut}</Badge>
       </Link>
@@ -85,6 +88,14 @@ export function DeliverableCard({
             <h3 className="font-semibold text-gray-900">{deliverable.nom}</h3>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs text-gray-500">{deliverable.type}</span>
+              {deliverable.lot && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <Badge variant="outline" className="text-xs px-1.5 py-0 h-5">
+                    {deliverable.lot}
+                  </Badge>
+                </>
+              )}
               {deliverable.version && (
                 <>
                   <span className="text-gray-300">•</span>

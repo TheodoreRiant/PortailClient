@@ -68,6 +68,7 @@ function transformLivrable(page: any): Livrable {
     statut: extractNotionProperty(props.Statut || props.statut, "select") ||
             extractNotionProperty(props.Statut || props.statut, "status"),
     type: extractNotionProperty(props.Type || props.type, "select"),
+    lot: extractNotionProperty(props.Lot || props.lot, "select") || extractNotionProperty(props.Lot || props.lot, "rich_text"),
     version: extractNotionProperty(props.Version || props.version, "rich_text") || "1.0",
     fichierPrecedentId: extractNotionProperty(props.FichierPrecedent || props.fichierPrecedent, "relation")?.[0],
     fichiers: extractNotionProperty(props.Fichiers || props.fichiers, "files") as NotionFile[],

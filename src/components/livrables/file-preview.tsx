@@ -12,6 +12,7 @@ import {
   FileImage,
   FileVideo,
   FileAudio,
+  FileArchive,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,7 @@ interface FilePreviewProps {
   className?: string;
 }
 
-function getFileType(file: NotionFile): "image" | "pdf" | "video" | "audio" | "other" {
+function getFileType(file: NotionFile): "image" | "pdf" | "video" | "audio" | "archive" | "other" {
   const name = file.name.toLowerCase();
   const url = file.url.toLowerCase();
 
@@ -45,6 +46,9 @@ function getFileType(file: NotionFile): "image" | "pdf" | "video" | "audio" | "o
   if (/\.(mp3|wav|ogg|m4a)(\?|$)/.test(url) || /\.(mp3|wav|ogg|m4a)$/.test(name)) {
     return "audio";
   }
+  if (/\.(zip|rar|7z|tar|gz|tgz)(\?|$)/.test(url) || /\.(zip|rar|7z|tar|gz|tgz)$/.test(name)) {
+    return "archive";
+  }
   return "other";
 }
 
@@ -58,6 +62,8 @@ function getFileIcon(fileType: string) {
       return FileVideo;
     case "audio":
       return FileAudio;
+    case "archive":
+      return FileArchive;
     default:
       return File;
   }
@@ -126,6 +132,19 @@ export function FilePreview({ file, className }: FilePreviewProps) {
             <audio controls className="w-full max-w-md mx-auto">
               <source src={file.url} />
             </audio>
+          </div>
+        </div>
+      );
+    }
+
+    // Archive files
+    if (fileType === "archive") {
+      return (
+        <div className={cn("flex items-center justify-center bg-amber-50 rounded-lg border border-amber-200", isFullSize ? "p-12" : "h-48")}>
+          <div className="text-center">
+            <FileArchive className="w-12 h-12 mx-auto text-amber-600 mb-2" />
+            <p className="text-sm font-medium text-gray-900 mb-1">{file.name}</p>
+            <p className="text-xs text-gray-500">Archive compressée</p>
           </div>
         </div>
       );
