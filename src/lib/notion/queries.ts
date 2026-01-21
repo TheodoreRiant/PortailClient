@@ -50,7 +50,7 @@ function transformProjet(page: any): Projet {
     tauxJournalier: extractNotionProperty(props.TauxJournalier || props.tauxJournalier, "number"),
     visiblePortail: extractNotionProperty(props.VisiblePortail || props.visiblePortail, "checkbox"),
     descriptionPublique: extractNotionProperty(props.DescriptionPublique || props.descriptionPublique, "rich_text"),
-    pourcentageAvancement: extractNotionProperty(props.PourcentageAvancement || props.pourcentageAvancement || props.Avancement, "number") || 0,
+    pourcentageAvancement: Math.round((extractNotionProperty(props.PourcentageAvancement || props.pourcentageAvancement || props.Avancement, "number") || 0) * 100),
     tags: extractNotionProperty(props.Tags || props.tags, "multi_select"),
     priorite: extractNotionProperty(props.Priorite || props.priorite, "select"),
   };
@@ -1031,9 +1031,13 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
         page_size: 100,
       });
 
-      for (const block of response.results) {
+      for (const block of response.results as any[]) {
         const transformed = transformBlock(block);
         if (transformed) {
+          // Recursively fetch children for blocks that have them (toggles, etc.)
+          if (block.has_children) {
+            transformed.children = await getPageContent(block.id);
+          }
           blocks.push(transformed);
         }
       }
