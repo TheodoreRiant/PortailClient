@@ -881,10 +881,23 @@ export async function createNotionClient({
 // Notion Page Content (Blocks)
 // ==========================================
 
+export interface RichTextSegment {
+  text: string;
+  href?: string;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    code?: boolean;
+  };
+}
+
 export interface NotionBlock {
   id: string;
   type: string;
   content: string;
+  richText?: RichTextSegment[];
   children?: NotionBlock[];
   url?: string;
   caption?: string;
@@ -893,6 +906,21 @@ export interface NotionBlock {
 function extractRichText(richText: any[]): string {
   if (!richText || !Array.isArray(richText)) return "";
   return richText.map((text: any) => text.plain_text || "").join("");
+}
+
+function extractRichTextWithLinks(richText: any[]): RichTextSegment[] {
+  if (!richText || !Array.isArray(richText)) return [];
+  return richText.map((text: any) => ({
+    text: text.plain_text || "",
+    href: text.href || undefined,
+    annotations: text.annotations ? {
+      bold: text.annotations.bold,
+      italic: text.annotations.italic,
+      strikethrough: text.annotations.strikethrough,
+      underline: text.annotations.underline,
+      code: text.annotations.code,
+    } : undefined,
+  }));
 }
 
 function transformBlock(block: any): NotionBlock | null {
@@ -904,48 +932,56 @@ function transformBlock(block: any): NotionBlock | null {
         id: block.id,
         type: "paragraph",
         content: extractRichText(block.paragraph?.rich_text),
+        richText: extractRichTextWithLinks(block.paragraph?.rich_text),
       };
     case "heading_1":
       return {
         id: block.id,
         type: "heading_1",
         content: extractRichText(block.heading_1?.rich_text),
+        richText: extractRichTextWithLinks(block.heading_1?.rich_text),
       };
     case "heading_2":
       return {
         id: block.id,
         type: "heading_2",
         content: extractRichText(block.heading_2?.rich_text),
+        richText: extractRichTextWithLinks(block.heading_2?.rich_text),
       };
     case "heading_3":
       return {
         id: block.id,
         type: "heading_3",
         content: extractRichText(block.heading_3?.rich_text),
+        richText: extractRichTextWithLinks(block.heading_3?.rich_text),
       };
     case "bulleted_list_item":
       return {
         id: block.id,
         type: "bulleted_list_item",
         content: extractRichText(block.bulleted_list_item?.rich_text),
+        richText: extractRichTextWithLinks(block.bulleted_list_item?.rich_text),
       };
     case "numbered_list_item":
       return {
         id: block.id,
         type: "numbered_list_item",
         content: extractRichText(block.numbered_list_item?.rich_text),
+        richText: extractRichTextWithLinks(block.numbered_list_item?.rich_text),
       };
     case "to_do":
       return {
         id: block.id,
         type: block.to_do?.checked ? "to_do_checked" : "to_do",
         content: extractRichText(block.to_do?.rich_text),
+        richText: extractRichTextWithLinks(block.to_do?.rich_text),
       };
     case "toggle":
       return {
         id: block.id,
         type: "toggle",
         content: extractRichText(block.toggle?.rich_text),
+        richText: extractRichTextWithLinks(block.toggle?.rich_text),
       };
     case "code":
       return {
@@ -959,12 +995,20 @@ function transformBlock(block: any): NotionBlock | null {
         id: block.id,
         type: "quote",
         content: extractRichText(block.quote?.rich_text),
+        richText: extractRichTextWithLinks(block.quote?.rich_text),
       };
     case "callout":
       return {
         id: block.id,
         type: "callout",
         content: extractRichText(block.callout?.rich_text),
+        richText: extractRichTextWithLinks(block.callout?.rich_text),
+      };
+    case "table_of_contents":
+      return {
+        id: block.id,
+        type: "table_of_contents",
+        content: "",
       };
     case "divider":
       return {

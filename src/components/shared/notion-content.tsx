@@ -1,10 +1,63 @@
 import { cn } from "@/lib/utils";
-import type { NotionBlock } from "@/lib/notion/queries";
-import { FileText, ExternalLink, CheckSquare, Square, Download } from "lucide-react";
+import type { NotionBlock, RichTextSegment } from "@/lib/notion/queries";
+import { FileText, ExternalLink, CheckSquare, Square, Download, List } from "lucide-react";
 
 interface NotionContentProps {
   blocks: NotionBlock[];
   className?: string;
+}
+
+// Helper to render rich text with links and formatting
+function RichTextRenderer({ segments }: { segments?: RichTextSegment[] }) {
+  if (!segments || segments.length === 0) return null;
+
+  return (
+    <>
+      {segments.map((segment, index) => {
+        let content: React.ReactNode = segment.text;
+
+        // Apply formatting
+        if (segment.annotations?.code) {
+          content = (
+            <code className="px-1.5 py-0.5 bg-gray-100 rounded text-sm font-mono text-pink-600">
+              {content}
+            </code>
+          );
+        }
+        if (segment.annotations?.bold) {
+          content = <strong>{content}</strong>;
+        }
+        if (segment.annotations?.italic) {
+          content = <em>{content}</em>;
+        }
+        if (segment.annotations?.strikethrough) {
+          content = <s>{content}</s>;
+        }
+        if (segment.annotations?.underline) {
+          content = <u>{content}</u>;
+        }
+
+        // Wrap in link if href exists
+        if (segment.href) {
+          // Check if it's an internal anchor link (starts with #)
+          const isInternalAnchor = segment.href.startsWith("#") || segment.href.includes("/#");
+
+          return (
+            <a
+              key={index}
+              href={segment.href}
+              className="text-primary-600 hover:text-primary-700 underline"
+              {...(!isInternalAnchor && { target: "_blank", rel: "noopener noreferrer" })}
+            >
+              {content}
+            </a>
+          );
+        }
+
+        return <span key={index}>{content}</span>;
+      })}
+    </>
+  );
 }
 
 export function NotionContent({ blocks, className }: NotionContentProps) {
@@ -58,43 +111,60 @@ export function NotionContent({ blocks, className }: NotionContentProps) {
             )}>
               {item.map((listItem) => (
                 <li key={listItem.id} className="text-gray-700 py-0.5">
-                  {listItem.content}
+                  {listItem.richText ? <RichTextRenderer segments={listItem.richText} /> : listItem.content}
                 </li>
               ))}
             </ListTag>
           );
         }
 
-        return <NotionBlockRenderer key={item.id} block={item} />;
+        return <NotionBlockRenderer key={item.id} block={item} allBlocks={blocks} />;
       })}
     </div>
   );
 }
 
-function NotionBlockRenderer({ block }: { block: NotionBlock }) {
+function NotionBlockRenderer({ block, allBlocks }: { block: NotionBlock; allBlocks?: NotionBlock[] }) {
+  // Helper to generate slug for headings (for anchor links)
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  };
+
   switch (block.type) {
     case "paragraph":
-      if (!block.content) return <div className="h-4" />;
-      return <p className="text-gray-700 leading-relaxed my-3">{block.content}</p>;
+      if (!block.content && (!block.richText || block.richText.length === 0)) return <div className="h-4" />;
+      return (
+        <p className="text-gray-700 leading-relaxed my-3">
+          {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
+        </p>
+      );
 
     case "heading_1":
+      const h1Slug = generateSlug(block.content);
       return (
-        <h1 className="text-2xl font-bold text-gray-900 mt-8 mb-4 first:mt-0">
-          {block.content}
+        <h1 id={h1Slug} className="text-2xl font-bold text-gray-900 mt-8 mb-4 first:mt-0 scroll-mt-20">
+          {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
         </h1>
       );
 
     case "heading_2":
+      const h2Slug = generateSlug(block.content);
       return (
-        <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-3 first:mt-0">
-          {block.content}
+        <h2 id={h2Slug} className="text-xl font-semibold text-gray-900 mt-6 mb-3 first:mt-0 scroll-mt-20">
+          {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
         </h2>
       );
 
     case "heading_3":
+      const h3Slug = generateSlug(block.content);
       return (
-        <h3 className="text-lg font-medium text-gray-900 mt-5 mb-2 first:mt-0">
-          {block.content}
+        <h3 id={h3Slug} className="text-lg font-medium text-gray-900 mt-5 mb-2 first:mt-0 scroll-mt-20">
+          {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
         </h3>
       );
 
@@ -102,7 +172,9 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
       return (
         <div className="flex items-start gap-2 my-2">
           <Square className="w-4 h-4 mt-1 text-gray-400 flex-shrink-0" />
-          <span className="text-gray-700">{block.content}</span>
+          <span className="text-gray-700">
+            {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
+          </span>
         </div>
       );
 
@@ -110,7 +182,9 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
       return (
         <div className="flex items-start gap-2 my-2">
           <CheckSquare className="w-4 h-4 mt-1 text-green-500 flex-shrink-0" />
-          <span className="text-gray-500 line-through">{block.content}</span>
+          <span className="text-gray-500 line-through">
+            {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
+          </span>
         </div>
       );
 
@@ -118,7 +192,7 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
       return (
         <details className="my-3 group">
           <summary className="cursor-pointer text-gray-700 font-medium hover:text-gray-900">
-            {block.content}
+            {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
           </summary>
           {block.children && (
             <div className="pl-4 mt-2 border-l-2 border-gray-200">
@@ -143,15 +217,49 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
     case "quote":
       return (
         <blockquote className="border-l-4 border-primary-500 pl-4 py-2 my-4 italic text-gray-600">
-          {block.content}
+          {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
         </blockquote>
       );
 
     case "callout":
       return (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4">
-          <p className="text-blue-800">{block.content}</p>
+          <p className="text-blue-800">
+            {block.richText ? <RichTextRenderer segments={block.richText} /> : block.content}
+          </p>
         </div>
+      );
+
+    case "table_of_contents":
+      // Generate table of contents from heading blocks
+      if (!allBlocks) return null;
+      const headings = allBlocks.filter(b =>
+        b.type === "heading_1" || b.type === "heading_2" || b.type === "heading_3"
+      );
+      if (headings.length === 0) return null;
+      return (
+        <nav className="my-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center gap-2 mb-3 text-sm font-medium text-gray-700">
+            <List className="w-4 h-4" />
+            Sommaire
+          </div>
+          <ul className="space-y-1">
+            {headings.map((heading) => {
+              const slug = generateSlug(heading.content);
+              const indent = heading.type === "heading_2" ? "pl-4" : heading.type === "heading_3" ? "pl-8" : "";
+              return (
+                <li key={heading.id} className={indent}>
+                  <a
+                    href={`#${slug}`}
+                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                  >
+                    {heading.content}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       );
 
     case "divider":
